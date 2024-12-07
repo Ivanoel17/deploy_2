@@ -1,13 +1,13 @@
 require('dotenv').config();
-
 const Hapi = require('@hapi/hapi');
-const routes = require('../server/routes');
+const routes = require('./routes');
 const loadModel = require('../services/loadModel');
 const InputError = require('../exceptions/InputError');
+const storeData = require('../services/storeData'); // Import storeData
 
 (async () => {
     const server = Hapi.server({
-        port: 8080,
+        port: 8000,
         host: '127.0.0.1',
         routes: {
             cors: {
@@ -21,12 +21,28 @@ const InputError = require('../exceptions/InputError');
 
     server.route(routes);
 
-    // Tambahkan route baru di sini
+    // Rute
     server.route({
         method: 'GET',
         path: '/',
         handler: (request, h) => {
             return { message: 'Hello World!' };
+        }
+    });
+
+    // storeData firestore
+    server.route({
+        method: 'POST',
+        path: '/store-data',
+        handler: async (request, h) => {
+            const { id, data } = request.payload;
+            try {
+                await storeData(id, data);
+                return { status: 'success', message: 'Data has been stored in Firestore!' };
+            } catch (error) {
+                console.error(error);
+                return h.response({ status: 'fail', message: 'Failed to store data' }).code(500);
+            }
         }
     });
 
