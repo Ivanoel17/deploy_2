@@ -1,4 +1,5 @@
-const {postPredictHandler, predictHistories} = require('../server/handler');
+const { options } = require("@hapi/hapi/lib/cors");
+const postPredictHandler = require("../server/handler");
      
 const routes = [
   {
