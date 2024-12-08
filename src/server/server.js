@@ -30,40 +30,27 @@ const storeData = require('../services/storeData'); // Import storeData
         }
     });
 
-    // storeData firestore
-    server.route({
-        method: 'POST',
-        path: '/store-data',
-        handler: async (request, h) => {
-            const { id, data } = request.payload;
-            try {
-                await storeData(id, data);
-                return { status: 'success', message: 'Data has been stored in Firestore!' };
-            } catch (error) {
-                console.error(error);
-                return h.response({ status: 'fail', message: 'Failed to store data' }).code(500);
-            }
-        }
-    });
-
-    server.ext('onPreResponse', function (request, h) {
+       server.ext('onPreResponse', (request, h) => {
         const response = request.response;
-        if (response instanceof InputError) {
-            const newResponse = h.response({
+
+        if(response instanceof InputError) {
+            const newRespose  = h.response({
                 status: 'fail',
-                message: `${response.message}`
-            });
-            newResponse.code(response.statusCode);
-            return newResponse;
+                message: 'Terjadi kesalahan dalam melakukan prediksi'
+            })
+            newRespose.code(response.statusCode);
+            return newRespose;
         }
-        if (response.isBoom) {
-            const newResponse = h.response({
+
+        if (response.isBoom && response.output.statusCode === 413) {
+            // Custom response for 413
+            const customResponse = {
                 status: 'fail',
-                message: response.message
-            });
-            newResponse.code(response.output.statusCode);
-            return newResponse;
-        }
+                message: 'Payload content length greater than maximum allowed: 1000000',
+            };
+            return h.response(customResponse).code(413);
+        }     
+
         return h.continue;
     });
 
