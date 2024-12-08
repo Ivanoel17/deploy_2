@@ -33,30 +33,5 @@ async function postPredictHandler(request, h) {
   return response;
 }
 
-async function predictHistories(request, h) {
-  const { model } = request.server.app;
-  const { Firestore } = require("@google-cloud/firestore");
-  const db = new Firestore({
-    projectId: "submissionmlgc-ivanoel-rhema",
-  });
-  const predictCollection = db.collection("predictions");
-  const snapshot = await predictCollection.get();
-  const result = [];
-  snapshot.forEach((doc) => {
-    result.push({
-      id: doc.id,
-      history: {
-        result: doc.data().result,
-        createdAt: doc.data().createdAt,
-        suggestion: doc.data().suggestion,
-        id: doc.data().id,
-      },
-    });
-  });
-  return h.response({
-    status: "success",
-    data: result,
-  });
-}
 
 module.exports = { postPredictHandler, predictHistories };
