@@ -3,7 +3,6 @@ const Hapi = require('@hapi/hapi');
 const routes = require('./routes');
 const loadModel = require('../services/loadModel');
 const InputError = require('../exceptions/InputError');
-const storeData = require('../services/storeData'); // Import storeData
 
 (async () => {
     const server = Hapi.server({
