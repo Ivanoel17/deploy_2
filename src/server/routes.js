@@ -12,12 +12,6 @@ const routes = [
         multipart: true
       }
     }
-  },
-  {
-    path: '/predict/histories',
-    method: 'GET',
-    handler: predictHistories
-    
   }
 ]
  
